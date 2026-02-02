@@ -3,9 +3,11 @@ from octofit_tracker.models import User, Team, Activity, Workout
 import random
 
 class Command(BaseCommand):
+
     help = 'Populate the database with test data for OctoFit Tracker'
 
     def handle(self, *args, **options):
+        print('Populate the octofit_db database with test data')
         users = []
         for i in range(5):
             user = User.objects.create(
