@@ -9,7 +9,7 @@ class Command(BaseCommand):
         users = []
         for i in range(5):
             user = User.objects.create(
-                username=f'user{i+1}',
+                name=f'user{i+1}',
                 email=f'user{i+1}@example.com',
                 password='testpass',
                 age=20 + i,
@@ -22,19 +22,21 @@ class Command(BaseCommand):
         teams = []
         for i in range(2):
             team = Team.objects.create(
-                name=f'Team {i+1}',
-                description=f'This is team {i+1}',
-                members=[user.id for user in users[i*2:(i+1)*2]]
+                name=f'Team {i+1}'
             )
+            # Assign users to this team
+            for user in users[i*2:(i+1)*2]:
+                user.team = team
+                user.save()
             teams.append(team)
-        self.stdout.write(self.style.SUCCESS('Created test teams.'))
+        self.stdout.write(self.style.SUCCESS('Created test teams and assigned users.'))
 
         workouts = []
         for i in range(3):
             workout = Workout.objects.create(
                 name=f'Workout {i+1}',
                 description=f'Workout {i+1} description',
-                difficulty=random.choice(['Easy', 'Medium', 'Hard'])
+                suggested_for=random.choice(['Beginner', 'Intermediate', 'Advanced'])
             )
             workouts.append(workout)
         self.stdout.write(self.style.SUCCESS('Created test workouts.'))
@@ -43,9 +45,9 @@ class Command(BaseCommand):
             for workout in workouts:
                 Activity.objects.create(
                     user=user,
-                    workout=workout,
+                    type=workout.name,
                     duration=random.randint(20, 60),
-                    calories=random.randint(100, 500)
+                    date='2026-02-02'
                 )
         self.stdout.write(self.style.SUCCESS('Created test activities.'))
         self.stdout.write(self.style.SUCCESS('Database populated with test data.'))
