@@ -17,7 +17,9 @@ import os
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, TeamViewSet, ActivityViewSet, WorkoutViewSet, LeaderboardViewSet, api_root
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 codespace_name = os.environ.get('CODESPACE_NAME')
 if codespace_name:
@@ -32,9 +34,21 @@ router.register(r'activities', ActivityViewSet)
 router.register(r'workouts', WorkoutViewSet)
 router.register(r'leaderboard', LeaderboardViewSet)
 
+
+# Custom api_root to return the correct base URL
+@api_view(['GET'])
+def custom_api_root(request):
+    return Response({
+        'users': f'{base_url}/api/users/',
+        'teams': f'{base_url}/api/teams/',
+        'activities': f'{base_url}/api/activities/',
+        'workouts': f'{base_url}/api/workouts/',
+        'leaderboard': f'{base_url}/api/leaderboard/',
+    })
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', api_root, name='api-root'),
+    path('api/', custom_api_root, name='api-root'),
     path('api/', include(router.urls)),
-    path('', api_root),
+    path('', custom_api_root),
 ]
